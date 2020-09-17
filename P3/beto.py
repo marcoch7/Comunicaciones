@@ -1,6 +1,6 @@
 import numpy as np
 #Abrir archivo txt para transmitir
-with open('info.txt','r') as rf:
+with open('info_.txt','r') as rf:
     info = rf.read()
   
 #Convertir a ASCII
@@ -46,8 +46,8 @@ for i in range(len(m0)):
     u = np.dot(m0[i],G)
     u0.append(u)
 
-# agregar error
 
+# agregar error
 ud = []
 p_e = 0.01
 for bits in u0:
@@ -87,7 +87,7 @@ for i in range(len(ud)):
 
 H = np.array([[1,0,0],[0,1,0],[0,0,1],[1,1,0],[0,1,1],[1,0,1]])
 
-# S
+# S = vH
 S = []
 for i in range(len(v0)):
     So = np.dot(v0[i],H)
@@ -126,10 +126,10 @@ def shift(array):
         en[0] = last
         return en
 
-print("\nANTES Sb: ")    
-print(Sb)    
-print("\nSe: ")   
-print(Se)  
+#print("\nANTES Sb: ")    
+#print(Sb)    
+#print("\nSe: ")   
+#print(Se)  
 indexe = []
 if(len(Se)>0):
     for i in range(len(Se)):
@@ -151,31 +151,50 @@ if(len(Se)>0):
                 else:
                     shift(en)         
 
-print("\nDESPUES Sb: ")    
-print(Sb)    
-print("\nSe: ")   
-print(Se)
-print("\ne0: ")   
-print(e0)
-print("\nindexv: ")
-print(indexv)
-print("\nv0: ")
-print(v0)
+#print("\nDESPUES Sb: ")    
+#print(Sb)    
+#print("\nSe: ")   
+#print(Se)
+#print("\ne0: ")   
+#print(e0)
+#print("\nindexv: ")
+#print(indexv)
+#print("\nv0: ")
+#print(v0)
 
 # Correccion de errores
 if(len(e0)>0):
     for i in range(len(e0)): 
         for j in range(len(e0[0])):
             if(e0[i][j] == 1):
-                indexe.append(j+1)
-    print("\nindexe:")
-    print(indexe) 
-
+                indexe.append(j)
+        if(v0[indexv[i]][indexe[i]] == 0):
+            v0[indexv[i]][indexe[i]] = 1     
+        else: 
+            v0[indexv[i]][indexe[i]] = 0  
+    #print("\nindexe:")
+    #print(indexe) 
+    #print("\nv0 corregido:")     
+    #print(v0)
+    
+#Pasar v0 corregido de matrix a array
+v0f = []
+for bits in v0:
+   for i in range(len(bits)):
+        if(i>2):
+            if(bits[i] == 0):
+                v0f.append('0')
+            else:
+                v0f.append('1')     
+#print("\nv0f:")    
+#print(v0f)     
+#print("\ncanal:")
+#print(channel)
 
 #Decodificar los bits en paquetes de 8 bits
 decoded_bits = []
-for i in range(int(len(channel)/8)):
-    aux = ''.join(channel[i*8:(i*8)+8])
+for i in range(int(len(v0f)/8)):
+    aux = ''.join(v0f[i*8:(i*8)+8])
     decoded_bits.append(aux)
 
 
