@@ -38,6 +38,7 @@ for bits in result_in_binary:
 
 # Matrix G
 G = np.array([[1,1,0,1,0,0],[0,1,1,0,1,0],[1,0,1,0,0,1]])
+print("G:\n")
 print(G)
 
 # m0
@@ -66,35 +67,140 @@ for i in range(len(m0)):
     u0.append(u)
 print(u0)
 
-# desconvertir xd
+# agregar error
 
 ud = []
+p_e = 0.01
 for bits in u0:
    for i in range(len(bits)):
-            numero=bits[i]
-            modulo=numero%2
+        prob = np.random.rand(1)
+        numero=bits[i]
+        modulo=numero%2
+        if (prob > p_e):
             if modulo==0:   
                 ud.append(0)
             else:
                 ud.append(1)
+        else:
+            if (bits[i] == "1"):
+                ud.append(int(0))
+            else:
+                ud.append(int(1))           
 print("u desconvertidos: \n")    
 print(ud) 
 print("\n")
 
-ud_con_error=[]
-p_e = 0.01
+# v0
+v0 = []
+n0 = []
+k = 0
+j = 0
 for i in range(len(ud)):
-    prob = np.random.rand(1)
-    if (prob > p_e):
-        ud_con_error.append(ud[i])
-    else:
-        if (ud[i] == "1"):
-            ud_con_error.append("0")
+    if(k<6):
+        n0.append(int(ud[i]))
+        k += 1
+    else: 
+        j += 1  
+        v0.append(n0)
+        n0 = []
+        n0.append(int(ud[i]))
+        k = 1
+print("v0: \n")        
+print(v0) 
+
+
+# Matrix H
+
+H = np.array([[1,0,0],[0,1,0],[0,0,1],[1,1,0],[0,1,1],[1,0,1]])
+print("H:\n")
+print(H)
+
+# S
+print("S: \n")
+S = []
+for i in range(len(v0)):
+    So = np.dot(v0[i],H)
+    S.append(So)
+
+Se = []
+for i in range(len(S)): 
+    k = 0
+    for j in range(len(S[0])):
+        numero = S[i][j]
+        modulo = numero%2
+        if modulo==0:   
+            S[i][j] = 0
         else:
-            ud_con_error.append("1")
-print("u desconvertidos con error: \n")   
-print(ud_con_error)
-    
+            S[i][j] = 1  
+        if(S[i][j] == 1 and k == 0):
+            Se.append(S[i])    
+            k = 1    
+    print("S:\n")        
+    print(S)
+    print("en:\n")        
+    print(Se)
+
+# e
+# Se = vH
+en = [1, 0, 0, 0, 0, 0]
+c = len(Se)
+print(c)
+Sb = Se   # stores syndrome = eH
+
+def shift(array):   
+    for i in range(0, 1):    
+        #Stores the last element of array    
+        last = en[len(en)-1]       
+        for j in range(len(en)-1, -1, -1):    
+        #Shift element of array by one    
+            en[j] = en[j-1]         
+        #Last element of the array will be added to the start of the array.    
+        en[0] = last
+        return en
+
+print("en post\n")    
+print(en)    
+for i in range(len(Se)):
+    Sb[i] = np.dot(en,H)
+    comparison = Sb[i] == Se[i]
+    equal = comparison.all()
+    l = 1
+    if(equal):
+        print("Exito, el vector de error es:\n")
+        print(en) 
+    else:
+        shift(en)
+        Sb[i] = np.dot(en,H)
+        comparison = Sb[i] == Se[i]
+        equal = comparison.all()    
+    """while(equal == 0 and l == 0):
+        Sb[i] = np.dot(en,H)
+        comparison = Sb[i] == Se[i]
+        equal = comparison.all()
+        if(equal):
+            print("Exito, el vector de error es:\n")
+            print(en) 
+            l = 0  
+        else:
+            print("no era \n")
+            shift(en)""" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Decodificar los bits en paquetes de 8 bits
 decoded_bits = []
 for i in range(int(len(channel)/8)):
