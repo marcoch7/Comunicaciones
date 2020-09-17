@@ -71,11 +71,29 @@ print(u0)
 ud = []
 for bits in u0:
    for i in range(len(bits)):
-            ud.append(bits[i])
+            numero=bits[i]
+            modulo=numero%2
+            if modulo==0:   
+                ud.append(0)
+            else:
+                ud.append(1)
 print("u desconvertidos: \n")    
-print(ud)  
+print(ud) 
+print("\n")
 
-
+ud_con_error=[]
+p_e = 0.01
+for i in range(len(ud)):
+    prob = np.random.rand(1)
+    if (prob > p_e):
+        ud_con_error.append(ud[i])
+    else:
+        if (ud[i] == "1"):
+            ud_con_error.append("0")
+        else:
+            ud_con_error.append("1")
+print("u desconvertidos con error: \n")   
+print(ud_con_error)
     
 #Decodificar los bits en paquetes de 8 bits
 decoded_bits = []
