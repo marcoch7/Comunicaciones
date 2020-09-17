@@ -10,36 +10,19 @@ results_in_ASCII = list(info.encode(encoding='us-ascii'))
 result_in_binary = []
 for symbol in results_in_ASCII:
     result_in_binary.append((bin(symbol)[2:]).zfill(8))
-print("b4 channel: \n")   
-print(result_in_binary)
+
 
 channel = []
 for bits in result_in_binary:
    for i in range(len(bits)):
             channel.append(bits[i])
-print("canal: \n")    
-print(channel)        
+     
 
-#Canal binario simetrico
-"""channel = []
-p_e = 0.01  # porcentaje de error
-for bits in result_in_binary:
-   for i in range(len(bits)):
-        prob = np.random.rand(1)
-        if (prob > p_e):
-            channel.append(bits[i])
-        else:
-            if (bits[i] == "1"):
-                channel.append("0")
-            else:
-                channel.append("1")"""
 
 #Hasta aqui llega la codificacion, los caracteres se envian en codigo ascii en paquetes de 8 bits
 
 # Matrix G
 G = np.array([[1,1,0,1,0,0],[0,1,1,0,1,0],[1,0,1,0,0,1]])
-print("G:\n")
-print(G)
 
 # m0
 m0 = []
@@ -55,17 +38,13 @@ for i in range(len(channel)):
         m0.append(n0)
         n0 = []
         n0.append(int(channel[i]))
-        k = 1
-print("m0: \n")        
-print(m0) 
+        k = 1 
 
 # u0
-print("u0: \n")
 u0 = []
 for i in range(len(m0)):
     u = np.dot(m0[i],G)
     u0.append(u)
-print(u0)
 
 # agregar error
 
@@ -86,9 +65,6 @@ for bits in u0:
                 ud.append(int(0))
             else:
                 ud.append(int(1))           
-print("u desconvertidos: \n")    
-print(ud) 
-print("\n")
 
 # v0
 v0 = []
@@ -105,24 +81,20 @@ for i in range(len(ud)):
         n0 = []
         n0.append(int(ud[i]))
         k = 1
-print("v0: \n")        
-print(v0) 
 
 
 # Matrix H
 
 H = np.array([[1,0,0],[0,1,0],[0,0,1],[1,1,0],[0,1,1],[1,0,1]])
-print("H:\n")
-print(H)
 
 # S
-print("S: \n")
 S = []
 for i in range(len(v0)):
     So = np.dot(v0[i],H)
     S.append(So)
 
 Se = []
+indexv = []
 for i in range(len(S)): 
     k = 0
     for j in range(len(S[0])):
@@ -134,18 +106,14 @@ for i in range(len(S)):
             S[i][j] = 1  
         if(S[i][j] == 1 and k == 0):
             Se.append(S[i])    
-            k = 1    
-    print("S:\n")        
-    print(S)
-    print("en:\n")        
-    print(Se)
+            k = 1 
+            indexv.append(i)   
 
 # e
 # Se = vH
 en = [1, 0, 0, 0, 0, 0]
-c = len(Se)
-print(c)
-Sb = Se   # stores syndrome = eH
+e0 = []
+Sb = []   # stores syndrome = eH
 
 def shift(array):   
     for i in range(0, 1):    
@@ -158,37 +126,57 @@ def shift(array):
         en[0] = last
         return en
 
-print("en post\n")    
-print(en)    
-for i in range(len(Se)):
-    Sb[i] = np.dot(en,H)
-    comparison = Sb[i] == Se[i]
-    equal = comparison.all()
-    l = 1
-    if(equal):
-        print("Exito, el vector de error es:\n")
-        print(en) 
-    else:
-        shift(en)
-        Sb[i] = np.dot(en,H)
-        comparison = Sb[i] == Se[i]
-        equal = comparison.all()    
-    """while(equal == 0 and l == 0):
-        Sb[i] = np.dot(en,H)
+print("\nANTES Sb: ")    
+print(Sb)    
+print("\nSe: ")   
+print(Se)  
+indexe = []
+if(len(Se)>0):
+    for i in range(len(Se)):
+        print("\nen IN")
+        print(en)
+        Sb.append(np.dot(en,H))
         comparison = Sb[i] == Se[i]
         equal = comparison.all()
+        print("\nequal")
+        print(equal)
+        a = 0
+        print("\nen OUT")
+        print(en)
         if(equal):
-            print("Exito, el vector de error es:\n")
-            print(en) 
-            l = 0  
-        else:
-            print("no era \n")
-            shift(en)""" 
+            print("\nentra al if")
+            e0.append(en)
+        else: 
+            print("\nentra al else")   
+            while(a == 0):
+                print("\nentra al while") 
+                Sb[i] = np.dot(en   ,H)
+                comparison = Sb[i] == Se[i]
+                equal = comparison.all()
+                if(equal):
+                    a = 1
+                    e0.append(en)
+                else:
+                    shift(en)
 
+print("\nDESPUES Sb: ")    
+print(Sb)    
+print("\nSe: ")   
+print(Se)
+print("\ne0: ")   
+print(e0)
+print("\nindexv: ")
+print(indexv)
+print("\nv0: ")
+print(v0)
 
-
-
-
+# Correccion de errores
+for i in range(len(e0)): 
+    for j in range(len(e0[0])):
+        if(e0[i][j] == 1):
+            indexe.append(j+1)
+print("\nindexe:")
+print(indexe)    
 
 
 
