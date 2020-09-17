@@ -133,31 +133,23 @@ print(Se)
 indexe = []
 if(len(Se)>0):
     for i in range(len(Se)):
-        print("\nen IN")
-        print(en)
+        temp = en.copy()
         Sb.append(np.dot(en,H))
         comparison = Sb[i] == Se[i]
         equal = comparison.all()
-        print("\nequal")
-        print(equal)
         a = 0
-        print("\nen OUT")
-        print(en)
         if(equal):
-            print("\nentra al if")
-            e0.append(en)
-        else: 
-            print("\nentra al else")   
+            e0.append(temp)
+        else:  
             while(a == 0):
-                print("\nentra al while") 
-                Sb[i] = np.dot(en   ,H)
+                Sb[i] = np.dot(en,H)
                 comparison = Sb[i] == Se[i]
                 equal = comparison.all()
                 if(equal):
                     a = 1
-                    e0.append(en)
+                    e0.append(temp)
                 else:
-                    shift(en)
+                    shift(en)         
 
 print("\nDESPUES Sb: ")    
 print(Sb)    
@@ -171,22 +163,13 @@ print("\nv0: ")
 print(v0)
 
 # Correccion de errores
-for i in range(len(e0)): 
-    for j in range(len(e0[0])):
-        if(e0[i][j] == 1):
-            indexe.append(j+1)
-print("\nindexe:")
-print(indexe)    
-
-
-
-
-
-
-
-
-
-
+if(len(e0)>0):
+    for i in range(len(e0)): 
+        for j in range(len(e0[0])):
+            if(e0[i][j] == 1):
+                indexe.append(j+1)
+    print("\nindexe:")
+    print(indexe) 
 
 
 #Decodificar los bits en paquetes de 8 bits
