@@ -126,10 +126,11 @@ def shift(array):
         en[0] = last
         return en
 
-#print("\nANTES Sb: ")    
-#print(Sb)    
-#print("\nSe: ")   
-#print(Se)  
+print("\nANTES Sb: ")    
+print(Sb)    
+print("\nSe: ")   
+print(Se) 
+em = 0 
 indexe = []
 if(len(Se)>0):
     for i in range(len(Se)):
@@ -138,6 +139,7 @@ if(len(Se)>0):
         comparison = Sb[i] == Se[i]
         equal = comparison.all()
         a = 0
+        em = 0
         if(equal):
             e0.append(temp)
         else:  
@@ -149,18 +151,24 @@ if(len(Se)>0):
                     a = 1
                     e0.append(temp)
                 else:
-                    shift(en)         
+                    shift(en)
+                    em += 1
+                    if(em == 10):
+                        break
 
-#print("\nDESPUES Sb: ")    
-#print(Sb)    
-#print("\nSe: ")   
-#print(Se)
-#print("\ne0: ")   
-#print(e0)
-#print("\nindexv: ")
-#print(indexv)
-#print("\nv0: ")
-#print(v0)
+                    
+                             
+
+print("\nDESPUES Sb: ")    
+print(Sb)    
+print("\nSe: ")   
+print(Se)
+print("\ne0: ")   
+print(e0)
+print("\nindexv: ")
+print(indexv)
+print("\nv0: ")
+print(v0)
 
 # Correccion de errores
 if(len(e0)>0):
