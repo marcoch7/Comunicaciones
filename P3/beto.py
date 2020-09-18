@@ -126,20 +126,65 @@ def shift(array):
         en[0] = last
         return en
 
-print("\nANTES Sb: ")    
-print(Sb)    
-print("\nSe: ")   
-print(Se) 
+flag_a = 0
+flag_b = 0
+flag_temp = 0
+def moreen(array, f_a, f_b, f_temp):
+    if(f_a):
+        if(f_b):
+            array = [0,0,0,0,0,0]
+        for i in range(6):
+            if(i == 0):
+                if((f_temp > 32 and f_temp < 65)):
+                    array[0] = 1
+                else:
+                    array[0] = 0 
+            elif(i==1):
+                if((f_temp > 16 and f_temp < 32) or (f_temp > 48 and f_temp < 65)):
+                    array[1] = 1
+                else:
+                    array[1] = 0 
+            elif(i==2):
+                if((f_temp > 8 and f_temp < 17) or (f_temp > 24 and f_temp < 33) or (f_temp > 40 and f_temp < 49) or (f_temp > 56)):
+                    array[2] = 1
+                else:
+                    array[2] = 0 
+            elif(i==3):
+                if((f_temp > 3 and f_temp < 9) or (f_temp > 12 and f_temp < 17) or (f_temp > 20 and f_temp < 25) or (f_temp > 28 and f_temp < 33) or (f_temp > 36 and f_temp < 41) or (f_temp > 44 and f_temp < 49) or (f_temp > 52 and f_temp < 57) or (f_temp > 60)):
+                    array[3] = 1
+                else:
+                    array[3] = 0   
+            elif(i==4):
+                if((f_temp > 2 and f_temp < 5) or (f_temp > 6 and f_temp < 9) or (f_temp > 10 and f_temp < 13) or (f_temp > 14 and f_temp < 17) or (f_temp > 18 and f_temp < 21) or (f_temp > 22 and f_temp < 25) or (f_temp > 26 and f_temp < 29) or (f_temp > 30 and f_temp < 33) or (f_temp > 34 and f_temp < 37) or (f_temp > 38 and f_temp < 41) or (f_temp > 42 and f_temp < 45) or (f_temp > 46 and f_temp < 49) or (f_temp > 50 and f_temp < 53) or (f_temp > 54 and f_temp < 57) or (f_temp > 58 and f_temp < 61) or (f_temp > 62 and f_temp < 65)):
+                    array[4] = 1
+                else:
+                    array[4] = 0  
+            elif(i==5):
+                if(array[5] == 0):
+                    array[5] = 1
+                else:
+                    array[5] = 0           
+        return array 
+    else:
+        return array   
+       
+
+#print("\nANTES Sb: ")    
+#print(Sb)    
+#print("\nSe: ")   
+#print(Se) 
+prueba = 0
 em = 0 
 indexe = []
 if(len(Se)>0):
     for i in range(len(Se)):
+        flag_a = 0
         temp = en.copy()
         Sb.append(np.dot(en,H))
         comparison = Sb[i] == Se[i]
         equal = comparison.all()
-        a = 0
         em = 0
+        a = 0
         if(equal):
             e0.append(temp)
         else:  
@@ -153,22 +198,30 @@ if(len(Se)>0):
                 else:
                     shift(en)
                     em += 1
-                    if(em == 10):
-                        break
+                    if(em == 6):
+                        flag_a = 1
+                        flag_b = 1
+                        flag_temp = 0
+                        moreen(en,flag_a,flag_b,flag_temp)
+                    if(em > 6):
+                        flag_b = 0
+                        flag_temp += 1
+                        moreen(en,flag_a,flag_b,flag_temp)
+                        prueba = 1
 
-                    
+               
                              
 
-print("\nDESPUES Sb: ")    
-print(Sb)    
-print("\nSe: ")   
-print(Se)
+#print("\nDESPUES Sb: ")    
+#print(Sb)    
+#print("\nSe: ")   
+#print(Se)
 print("\ne0: ")   
 print(e0)
 print("\nindexv: ")
 print(indexv)
-print("\nv0: ")
-print(v0)
+#print("\nv0: ")
+#print(v0)
 
 # Correccion de errores
 if(len(e0)>0):
@@ -220,3 +273,6 @@ with open('transmision.txt','w') as wf:
 
 print('Transmitiendo ...')
 print('Hecho!')
+print(len(v0f))
+if(prueba):
+    print("\nentroooooooo")
