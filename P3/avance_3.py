@@ -1,12 +1,12 @@
 import numpy as np
-#Abrir archivo txt para transmitir
+#Open .txt
 with open('info_.txt','r') as rf:
     info = rf.read()
   
-#Convertir a ASCII
+#from text to ASCII
 results_in_ASCII = list(info.encode(encoding='us-ascii'))
 
-#Convertir a binario
+#from ASCII to binary
 result_in_binary = []
 for symbol in results_in_ASCII:
     result_in_binary.append((bin(symbol)[2:]).zfill(8))
@@ -16,10 +16,8 @@ channel = []
 for bits in result_in_binary:
    for i in range(len(bits)):
             channel.append(bits[i])
-     
 
-
-#Hasta aqui llega la codificacion, los caracteres se envian en codigo ascii en paquetes de 8 bits
+#Codification done. Chars are sent in 8 bit sized packets
 
 # Matrix G
 G = np.array([[1,1,0,1,0,0],[0,1,1,0,1,0],[1,0,1,0,0,1]])
@@ -47,9 +45,9 @@ for i in range(len(m0)):
     u0.append(u)
 
 
-# agregar error
+# add error
 ud = []
-p_e = 0.01
+p_e = 0.02
 for bits in u0:
    for i in range(len(bits)):
         prob = np.random.rand(1)
@@ -93,6 +91,7 @@ for i in range(len(v0)):
     So = np.dot(v0[i],H)
     S.append(So)
 
+#get binary arrays in matrix Se
 Se = []
 indexv = []
 for i in range(len(S)): 
@@ -111,24 +110,24 @@ for i in range(len(S)):
 
 # e
 # Se = vH
-en = [1, 0, 0, 0, 0, 0]
-e0 = []
-Sb = []   # stores syndrome = eH
+en = [1, 0, 0, 0, 0, 0]                                                 #stores current error vector
+e0 = []                                                                 #stores all error vectors that fulfill e*H = S, S != [0,0,0]
+Sb = []                                                                 #stores syndrome = eH
 
+# Function that shifts to the right the array
 def shift(array):   
     for i in range(0, 1):    
-        #Stores the last element of array    
+        #Stores last element of array    
         last = en[len(en)-1]       
         for j in range(len(en)-1, -1, -1):    
-        #Shift element of array by one    
+        #Shifts elements of array     
             en[j] = en[j-1]         
-        #Last element of the array will be added to the start of the array.    
+        #Adds last element of the array to the top   
         en[0] = last
         return en
 
-flag_a = 0
-flag_b = 0
-flag_temp = 0
+# Function that returns array + 1 
+# Adds 1 in binary 
 def moreen(array, f_a, f_b, f_temp):
     if(f_a):
         if(f_b):
@@ -163,18 +162,18 @@ def moreen(array, f_a, f_b, f_temp):
                 if(array[5] == 0):
                     array[5] = 1
                 else:
-                    array[5] = 0           
+                    array[5] = 0                 
         return array 
     else:
-        return array   
-       
+        return array
 
-#print("\nANTES Sb: ")    
-#print(Sb)    
-#print("\nSe: ")   
-#print(Se) 
-prueba = 0
-em = 0 
+
+         
+# Get error vectors into e0 matrix      
+flag_a = 0                                                                                      #flag_a: moreen flag. If 1 add 1 to array
+flag_b = 0                                                                                      #flag_b: moreen flag. If 1 reset array
+flag_temp = 0
+em = 0                                                                                          #em: iterations flag. If > 5 try all input errors 
 indexe = []
 if(len(Se)>0):
     for i in range(len(Se)):
@@ -184,21 +183,23 @@ if(len(Se)>0):
         comparison = Sb[i] == Se[i]
         equal = comparison.all()
         em = 0
-        a = 0
+        a = 0                                                                                  #a: validation flag. If 1 return 
         if(equal):
             e0.append(temp)
         else:  
-            while(a == 0):
+            while(a == 0):                                                                     #updates e and checks for e*H = S with priority e = identity > 0 to 64 binary
                 Sb[i] = np.dot(en,H)
                 comparison = Sb[i] == Se[i]
                 equal = comparison.all()
                 if(equal):
                     a = 1
+                    temp = en.copy()
                     e0.append(temp)
+                    en = [1,0,0,0,0,0]
                 else:
                     shift(en)
                     em += 1
-                    if(em == 6):
+                    if(em == 6):                                                               #case error != identity
                         flag_a = 1
                         flag_b = 1
                         flag_temp = 0
@@ -207,23 +208,8 @@ if(len(Se)>0):
                         flag_b = 0
                         flag_temp += 1
                         moreen(en,flag_a,flag_b,flag_temp)
-                        prueba = 1
-
-               
-                             
-
-#print("\nDESPUES Sb: ")    
-#print(Sb)    
-#print("\nSe: ")   
-#print(Se)
-print("\ne0: ")   
-print(e0)
-print("\nindexv: ")
-print(indexv)
-#print("\nv0: ")
-#print(v0)
-
-# Correccion de errores
+                        
+# Error correction
 if(len(e0)>0):
     for i in range(len(e0)): 
         for j in range(len(e0[0])):
@@ -233,12 +219,8 @@ if(len(e0)>0):
             v0[indexv[i]][indexe[i]] = 1     
         else: 
             v0[indexv[i]][indexe[i]] = 0  
-    #print("\nindexe:")
-    #print(indexe) 
-    #print("\nv0 corregido:")     
-    #print(v0)
     
-#Pasar v0 corregido de matrix a array
+#v0 from matrix to array of strings
 v0f = []
 for bits in v0:
    for i in range(len(bits)):
@@ -247,32 +229,27 @@ for bits in v0:
                 v0f.append('0')
             else:
                 v0f.append('1')     
-#print("\nv0f:")    
-#print(v0f)     
-#print("\ncanal:")
-#print(channel)
 
-#Decodificar los bits en paquetes de 8 bits
+#bits are decoded in 8 bit packets
 decoded_bits = []
 for i in range(int(len(v0f)/8)):
     aux = ''.join(v0f[i*8:(i*8)+8])
     decoded_bits.append(aux)
 
 
-#Decodificar mensaje
+#Message decodification
 decoded_message = ''
 for bits in decoded_bits:
     n = int(bits, 2)
     decoded_message += n.to_bytes(1, 'big').decode('us-ascii', 'replace')
     
 
-
-#Escribir el archivo decodificado y transmitido
+#Write transmision.txt with decodified bits
 with open('transmision.txt','w') as wf:
     wf.write(decoded_message)
 
 print('Transmitiendo ...')
 print('Hecho!')
-print(len(v0f))
-if(prueba):
-    print("\nentroooooooo")
+
+
+    
