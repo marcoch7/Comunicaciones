@@ -92,13 +92,31 @@ for p,b in enumerate(bits):
         senal[p*pts:(p+1)*pts] = 5*cnst*cosine
     elif (b[0]%2  != 0 and b[1]%2 != 0): #11
         senal[p*pts:(p+1)*pts] = 10*cnst*cosine
-    
+
+
+# Se agrega ruido a la señal
+
+# Potencia instantánea
+Pinst = senal**2
+# Potencia promedio a partir de la potencia instantánea (W)
+Ps = integrate.trapz(Pinst, t) / (len(bits)*50 * T_sim)
+# Relación señal-a-ruido deseada
+SNR = -1
+# Potencia del ruido para SNR y potencia de la señal dadas
+Pn = Ps / (10**(SNR / 10))
+# Desviación estándar del ruido
+sigma = np.sqrt(Pn)
+# Creacion de ruido (Pn = sigma^2)
+ruido = np.random.normal(0, sigma, senal.shape)
+# senal con ruido
+senal = senal + ruido
+
 #senal = senal[int(pts/2):]
 #t = t[:-int(pts/2)]
 # Visualizacion de los primeros bits modulados
 pb = 5
 plt.plot(t[0:pb*pts],senal[0:pb*pts])
-plt.title('Visualizacion de los primeros 5 bloques de bits modulados sin ruido')
+plt.title('Visualizacion de los primeros 5 bloques de bits modulados con ruido')
 plt.ylabel('Amplitud')
 plt.xlabel('tiempo(s)')
 plt.savefig('p6_senalsinruido.png')
@@ -304,5 +322,6 @@ with open('transmision.txt','w') as wf:
 
 print('Transmitiendo ...')
 print('Hecho!')
+
 
 
