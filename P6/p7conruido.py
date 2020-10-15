@@ -99,19 +99,19 @@ for p,b in enumerate(bits):
         if (prob <= p_e):
             decimal=np.random.rand(1)
             if(b[0]%2  == 0 and b[1]%2 == 0):
-                entero=np.random.randint(4*cnst,12*cnst)
+                entero=np.random.randint(4.5*cnst,15.5*cnst)
                 numeroerror=-entero-decimal
                 senal[i]=numeroerror
             if(b[0]%2  == 0 and b[1]%2 != 0):
-                entero=np.random.randint(4*cnst,10*cnst)
+                entero=np.random.randint(-0.5*cnst,10.5*cnst)
                 numeroerror=-entero-decimal
                 senal[i]=numeroerror
             if(b[0]%2  != 0 and b[1]%2 == 0):
-                entero=np.random.randint(4*cnst,10*cnst)
+                entero=np.random.randint(-0.5*cnst,10.5*cnst)
                 numeroerror=entero+decimal
                 senal[i]=numeroerror
             if(b[0]%2  != 0 and b[1] != 0):
-                entero=np.random.randint(4*cnst,12*cnst)
+                entero=np.random.randint(4.5*cnst,15.5*cnst)
                 numeroerror=entero+decimal
                 senal[i]=numeroerror
 
